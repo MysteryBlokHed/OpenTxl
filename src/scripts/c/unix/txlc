@@ -20,9 +20,12 @@ then
 fi
 
 # Localization
-CC="gcc"
+CC="${CC:-cc}"
+BUILD_TXLLIB="${BUILD_TXLLIB:-$TXLLIB}"
+TARGET_TXLLIB="${TARGET_TXLLIB:-$TXLLIB}"
+OS="${OS:-$(uname -s)}"
 
-case `uname -s` in
+case "$OS" in
     CYGWIN*|MSYS*|MINGW64*)
         CC="$CC -Wl,--stack,0x20000000";;
     *)
@@ -90,10 +93,10 @@ then
 fi
 
 # Convert TXLVM byte code to initialized C byte array
-$TXLLIB/txlcvt.x $TXLNAME.ctxl
+$BUILD_TXLLIB/txlcvt.x $TXLNAME.ctxl
 
 # Compile and link with TXLVM
-$CC -O -w -o $TXLNAME.x $TXLLIB/txlmain.o $TXLLIB/txlvm.o  ${TXLNAME}_TXL.c -lm
+$CC -O -w -o $TXLNAME.x $TARGET_TXLLIB/txlmain.o $TARGET_TXLLIB/txlvm.o  ${TXLNAME}_TXL.c -lm
 
 # Clean up
 /bin/rm -f $TXLNAME.ctxl Txl/$TXLNAME.ctxl txl/$TXLNAME.ctxl ${TXLNAME}_TXL.* 2> /dev/null

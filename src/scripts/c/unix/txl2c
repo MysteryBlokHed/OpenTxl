@@ -20,7 +20,8 @@ then
 fi
 
 # Localization
-CC="gcc"
+CC="${CC:-cc}"
+BUILD_TXLLIB="${BUILD_TXLLIB:-$TXLLIB}"
 
 case `uname -s` in
     CYGWIN*|MSYS*|MINGW64*)
@@ -90,7 +91,7 @@ then
 fi
 
 # Convert TXLVM byte code to initialized C byte array
-$TXLLIB/txlcvt.x $TXLNAME.ctxl
+$BUILD_TXLLIB/txlcvt.x $TXLNAME.ctxl
 
 # Clean up
 /bin/rm -f $TXLNAME.ctxl Txl/$TXLNAME.ctxl txl/$TXLNAME.ctxl 2> /dev/null

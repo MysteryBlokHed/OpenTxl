@@ -19,6 +19,8 @@ then
     exit 99
 fi
 
+BUILD_TXLLIB="${BUILD_TXLLIB:-$TXLLIB}"
+
 # Decode TXL program name and options
 TXLFILES=""
 TXLOPTIONS=""
@@ -43,7 +45,7 @@ done
 # Run the TXL command, using txlpf
 if [ "$1" != "" ]
 then
-if  ! $TXLLIB/txlpf.x $* > /dev/null 2> /tmp/txlp$$ 
+if  ! $BUILD_TXLLIB/txlpf.x $* > /dev/null 2> /tmp/txlp$$
 then
 	echo "txlp:  TXL program failed" 2>&1
 	cat /tmp/txlp$$ 2>&1
@@ -54,7 +56,7 @@ then
 fi
 
 # Analyze the results
-$TXLLIB/txlapr.x $PROFOPTIONS
+$BUILD_TXLLIB/txlapr.x $PROFOPTIONS
 
 # Clean up
 /bin/rm -f /tmp/txlp$$
