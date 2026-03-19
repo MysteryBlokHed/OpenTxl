@@ -13,9 +13,10 @@
 # most optimizing C compilers to generate incorrect code for it, or at 
 # the very least to slow it down severely, at higher levels of optimization.
 
-CC = gcc -w -Wno-error=int-conversion 
-CFLAGS = -c -O -fno-inline -I .
+CC = gcc
+CFLAGS = -w -Wno-error=int-conversion -c -O -fno-inline -I .
 LD = gcc
+STRIP = strip
 LDFLAGS =
 LDLIBS = -lm
 RLFLAGS = -r 
@@ -52,12 +53,14 @@ else ifeq ($(OS), CYGWIN)
 
 else ifeq ($(OS), MSYS)
     MESSAGE = "Making TXL on Msys / MinGW using gcc and BSD signal handling"
+    CFLAGS := $(CFLAGS) -DWIN
     LDFLAGS := $(LDFLAGS) -Wl,--stack,0x2000000
     EXE = .exe
     SIGTYPE = BSD
 
 else ifeq ($(OS), MINGW64)
     MESSAGE = "Making TXL on Msys / MinGW using gcc and BSD signal handling"
+    CFLAGS := $(CFLAGS) -DWIN
     LDFLAGS := $(LDFLAGS) -Wl,--stack,0x2000000
     EXE = .exe
     SIGTYPE = BSD
@@ -89,18 +92,18 @@ alltxls : thetxl thetxldb thetxlpf thetxlvm thetxlcvt thetxlapr
 thetxl : bin objs objs/main.o objs/txl.o objs/xform.o objs/parse.o objs/loadstor.o ${OBJS} ${TLOBJS} 
 	${CC} ${LDFLAGS} -o bin/txl objs/main.o objs/txl.o objs/xform.o objs/parse.o objs/loadstor.o \
 	    ${OBJS} ${TLOBJS} ${LDLIBS}
-	strip bin/txl${EXE}
+	$(STRIP) bin/txl${EXE}
 	cp scripts/unix/* bin/
 
 thetxldb : bin objs objs/main.o objs/txl.o objs/xformdb.o objs/parse.o objs/loadstor.o ${OBJS} ${TLOBJS} 
 	${CC} ${LDFLAGS} -o bin/txldb objs/main.o objs/txl.o objs/xformdb.o objs/parse.o objs/loadstor.o \
 	    ${OBJS} ${TLOBJS} ${LDLIBS}
-	strip bin/txldb${EXE}
+	$(STRIP) bin/txldb${EXE}
 
 thetxlpf : lib objs objs/main.o objs/txl.o objs/xformpf.o objs/parsepf.o objs/loadstor.o ${OBJS} ${TLOBJS}
 	${CC} ${LDFLAGS} -o lib/txlpf.x objs/main.o objs/txl.o objs/xformpf.o objs/parsepf.o objs/loadstor.o \
 	    ${OBJS} ${TLOBJS} ${LDLIBS}
-	strip lib/txlpf.x
+	$(STRIP) lib/txlpf.x
 
 thetxlvm : lib objs objs/main.o objs/txlsa.o objs/xform.o objs/loadsa.o objs/parsa.o ${COMMONOBJS} ${TLOBJS} 
 	${LD} ${RLFLAGS} -o lib/txlvm.o objs/txlsa.o objs/xform.o objs/loadsa.o objs/parsa.o \
@@ -109,11 +112,11 @@ thetxlvm : lib objs objs/main.o objs/txlsa.o objs/xform.o objs/loadsa.o objs/par
 
 thetxlcvt : lib objs objs/main.o objs/txlcvt.o
 	${CC} ${LDFLAGS} -o lib/txlcvt.x objs/main.o objs/txlcvt.o ${TLOBJS} ${LDLIBS}
-	strip lib/txlcvt.x
+	$(STRIP) lib/txlcvt.x
 
 thetxlapr : lib objs objs/main.o objs/txlapr.o
 	${CC} ${LDFLAGS} -o lib/txlapr.x objs/main.o objs/txlapr.o ${TLOBJS} ${LDLIBS}
-	strip lib/txlapr.x
+	$(STRIP) lib/txlapr.x
 
 objs/main.o : tpluslib/TL.h UNIX main.c 
 	${CC} $(CFLAGS) -D${SIGTYPE} main.c; mv main.o objs/main.o
@@ -216,4 +219,3 @@ clean :
 	rm -f bin/txl* objs/*.o 
 	rm -rf opentxl opentxl-* opentxl*.tar.gz 
 	cd test; make clean; cd ..
-
