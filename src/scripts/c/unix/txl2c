@@ -19,16 +19,7 @@ then
     exit 99
 fi
 
-# Localization
-CC="${CC:-cc}"
 BUILD_TXLLIB="${BUILD_TXLLIB:-$TXLLIB}"
-
-case `uname -s` in
-    CYGWIN*|MSYS*|MINGW64*)
-        CC="$CC -Wl,--stack,0x20000000";;
-    *)
-	;;
-esac
 
 # Decode TXL program name and options
 TXLPROG=""
